@@ -1,0 +1,13 @@
+packages = [
+    "friendsofphp/php-cs-fixer",
+    "php-parallel-lint/php-console-highlighter",
+    "php-parallel-lint/php-parallel-lint",
+    "phpmd/phpmd",
+    "phpstan/phpstan",
+    "phpstan/phpstan-symfony",
+    "codeception/codeception",
+    "codeception/module-asserts",
+    "codeception/module-db",
+    "codeception/module-phpbrowser",
+    "codeception/module-symfony",
+]

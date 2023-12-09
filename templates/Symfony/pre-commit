@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# will need modified to be windows and mac capable
+export PATH=$PATH:/usr/local/bin:/opt/homebrew/bin
+
+# leaving out for now, to allow seeing issue but not preventing work
+#set -e
+
+make precommit
+git add .
