@@ -16,14 +16,8 @@ use RedPandaCoding\ToolWeaver\ToolWeaverApplication;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
-class Command extends SymfonyCommand implements ServiceSubscriberInterface
+class Command extends SymfonyCommand// implements ServiceSubscriberInterface
 {
-    public function __construct(
-        private ContainerInterface $locator,
-    ) {
-        parent::__construct();
-    }
-
     protected function isToolWeaverApplication(): bool
     {
         if (class_exists(ToolWeaverApplication::class)) {
@@ -33,26 +27,24 @@ class Command extends SymfonyCommand implements ServiceSubscriberInterface
         return false;
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    protected function get(string $id)
-    {
-        var_dump($this->locator->get(ShellUtils::class));
-        die();
-        if (!$this->locator->has($id)) {
-            throw new \Exception(sprintf(
-                'Service `%s` not found!',
-                $id
-            ));
-        }
+//    /**
+//     * @throws ContainerExceptionInterface
+//     * @throws NotFoundExceptionInterface
+//     */
+//    protected function get(string $id)
+//    {
+//        if (!$this->locator->has($id)) {
+//            throw new \Exception(sprintf(
+//                'Service `%s` not found!',
+//                $id
+//            ));
+//        }
+//
+//        return $this->locator->get($id);
+//    }
 
-        return $this->locator->get($id);
-    }
-
-    public static function getSubscribedServices(): array
-    {
-        return [];
-    }
+//    public static function getSubscribedServices(): array
+//    {
+//        return [];
+//    }
 }

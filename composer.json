@@ -4,14 +4,27 @@
         "symfony/event-dispatcher": "^6.4",
         "symfony/filesystem": "^6.4",
         "symfony/dependency-injection": "^6.4",
-        "symfony/service-contracts": "^3.4",
-        "redpandacoding/contracts": "^1.0"
+        "redpandacoding/contracts": "1.x-dev",
+        "symfony/runtime": "^6.4"
     },
     "autoload": {
         "psr-4": {
             "RedPandaCoding\\ToolWeaver\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RedPandaCoding\\ToolWeaver\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
     "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
+        }
     }
 }

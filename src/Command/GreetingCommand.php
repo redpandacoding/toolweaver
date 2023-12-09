@@ -8,6 +8,10 @@
 
 namespace RedPandaCoding\ToolWeaver\Command;
 
+use DateTime;
+use DateTimeZone;
+use Exception;
+use RedPandaCoding\ToolWeaver\Service\Shell\ShellUtils;
 use RedPandaCoding\ToolWeaver\ToolWeaverApplication;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,30 +24,40 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Greet a user based on the time of the day.',
 
 )]
-class TimeCommand extends Command
+class GreetingCommand extends Command
 {
+
+    public function __construct(
+        private ShellUtils $shell,
+    ){
+        parent::__construct();
+    }
+
     public function configure(): void
     {
         $this
             -> setHelp('This command allows you to greet a user based on the time of the day...')
-            -> addArgument('username', InputArgument::REQUIRED, 'The username of the user.')
+//            -> addArgument('username', InputArgument::, 'The username of the user.')
         ;
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln($this->getGreeting().', '.$input->getArgument('username'));
+//        var_dump($this->getApplication()->get('weaver.tools.shell_util'));
+        $output->writeln($this->getGreeting().', '.get_current_user());
 
         return self::SUCCESS;
     }
 
+    /**
+     * @throws Exception
+     */
     private function getGreeting()
     {
         /* This sets the $time variable to the current hour in the 24 hour clock format */
-        $time = date("H");
+        $time = date("H",(new DateTime('now',new DateTimeZone('America/Chicago')))->getTimestamp());
         /* Set the $timezone variable to become the current timezone */
-        $timezone = date("e");
-        var_dump($timezone);
+
         /* If the time is less than 1200 hours, show good morning */
         if ($time < "12") {
             return "Good morning";

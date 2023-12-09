@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Determine vendor directory.
+ */
+
+use RedPandaCoding\ToolWeaver\Kernel;
+use RedPandaCoding\ToolWeaver\ToolWeaverApplication;
+
+$vendorDirectory = '';
+
+if (file_exists(__DIR__.'/../../autoload_runtime.php')) {
+    $vendorDirectory = __DIR__.'/../..';
+} elseif (file_exists(__DIR__.'/vendor/autoload_runtime.php')) {
+    $vendorDirectory = __DIR__.'/vendor';
+} elseif (file_exists(__DIR__.'/../vendor/autoload_runtime.php')) {
+    $vendorDirectory = __DIR__.'/../vendor';
+}
+
+if (empty($vendorDirectory)) {
+    throw new \RuntimeException('Unable to find vendor directory');
+}
+
+require $vendorDirectory.'/autoload_runtime.php';
+
+return function (array $context) {
+    $kernel = new Kernel();
+
+    return $kernel->run();
+};
+

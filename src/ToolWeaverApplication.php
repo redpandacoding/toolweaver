@@ -8,20 +8,28 @@
 
 namespace RedPandaCoding\ToolWeaver;
 
+use Redpandacoding\Contracts\Console\KernelInterface;
 use RedPandaCoding\ToolWeaver\Command\InstallCommand;
-use RedPandaCoding\ToolWeaver\Command\TimeCommand;
+use RedPandaCoding\ToolWeaver\Command\GreetingCommand;
 use RedPandaCoding\ToolWeaver\Service\Shell\ShellUtils;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\SignalRegistry\SignalRegistry;
+use Symfony\Component\Console\Terminal;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Contracts\Service\ServiceLocatorTrait;
+use Symfony\Contracts\Service\ServiceProviderInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
+use Symfony\Contracts\Service\ServiceSubscriberTrait;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 class ToolWeaverApplication extends Application
 {
@@ -32,8 +40,7 @@ class ToolWeaverApplication extends Application
     public const MINOR_VERSION = 0;
     public const RELEASE_VERSION = 0;
     public const EXTRA_VERSION = '';
-
-    public ContainerInterface $container;
+    private KernelInterface $kernel;
 
     /**
      * Whether to overwrite existing build process files
@@ -78,16 +85,17 @@ class ToolWeaverApplication extends Application
      * @var string|false
      */
     private string|false $cwd;
+    private string $defaultCommand;
 
-    public function __construct(bool $art = true)
+    public function __construct(KernelInterface $kernel, bool $art = true)
     {
-        parent::__construct(self::NAME, self::VERSION);
+        $this->kernel = $kernel;
+
+//        $this->setDefaultCommand('completion');
+
         if ($art) {
             $this->addAsciiArt();
         }
-
-        $this->serviceWiring();
-        $this->init();
 
         $this->cwd = getcwd();
 
@@ -102,6 +110,20 @@ class ToolWeaverApplication extends Application
             // @TODO this one could be more problemative. i want to check if that file exists in the project im installing into not my project thats doing the actions
             $this->configDirectory = '';
         }
+
+        // Boot Kernal
+        // TODO: should we have all this config in the kernel??
+//        $this->kernel->boot();
+
+//        $this->kernel->getContainer()->set('tool', $this);
+
+        // Register commands with their specific service locators
+//        foreach (self::getSubscribedCommands() as $commandClass) {
+//            var_dump($this->kernel->getContainer()->get($commandClass));die;
+//            $this->add(new $commandClass());
+//        }
+
+        parent::__construct(self::NAME, Kernel::VERSION);
     }
 
     public function getTemplateDirectory()
@@ -116,6 +138,11 @@ class ToolWeaverApplication extends Application
         return $projectType;
     }
 
+//    public function get(string $id)
+//    {
+//        return $this->kernel->getContainer()->has($id);
+//    }
+
     public function isWordpressProject(): bool
     {
         $projectType = str_contains(getcwd(), '/wp-content');
@@ -123,7 +150,7 @@ class ToolWeaverApplication extends Application
         return $projectType;
     }
 
-    private function addAsciiArt()
+    private function addAsciiArt(): void
     {
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
@@ -145,52 +172,12 @@ class ToolWeaverApplication extends Application
         $this->setDispatcher($dispatcher);
     }
 
-    private function init()
+    public function setSubscribedCommands(iterable $commands): void
     {
-
-        // Register commands with their specific service locators
-        foreach (self::getSubscribedCommands() as $commandClass) {
-            if (is_subclass_of($commandClass, ServiceSubscriberInterface::class)) {
-                $subscribedServices = call_user_func([$commandClass, 'getSubscribedServices']);
-                $locator = new ServiceLocator(array_map(function ($id) {
-                    return function () use ($id) { return $this->container->get($id); };
-                }, array_flip($subscribedServices)));
-
-                /** @var \Symfony\Component\Console\Command\Command $command */
-                $command = new $commandClass($locator);
-
-                $this->add($command);
-                continue;
-            }
-
-            $this->add(new $commandClass());
+        foreach ($commands as $command) {
+            $this->add($command);
         }
     }
 
-    private function serviceWiring(): void
-    {
-        // Create and configure the container
-        $this->container = new ContainerBuilder();
 
-        // Parameters
-        $this->container->setParameter('tools.locator', ServiceLocator::class);
-
-        // Services
-        $this->container->autowire('weaver.tool.shellutil',ShellUtils::class);
-        $this->container->autowire('%tools.locator%',ServiceLocator::class);
-
-        // Commands
-        $this->container->autowire('weaver.cmd.install',InstallCommand::class)
-            ->addArgument([new Reference('%tools.locator%')]);
-
-        $this->container->compile();
-    }
-
-    private static function getSubscribedCommands(): array
-    {
-        return [
-            InstallCommand::class,
-            TimeCommand::class,
-        ];
-    }
 }

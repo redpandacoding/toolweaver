@@ -24,13 +24,6 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 )]
 class InstallCommand extends Command
 {
-    public function __construct(
-//        private ShellUtils $shellUtils,
-        ServiceLocator $locator,
-    ){
-        parent::__construct($locator);
-    }
-
     public function configure()
     {
         $this
@@ -62,6 +55,8 @@ class InstallCommand extends Command
 
         // Create File in project from the template folder.
         $this->install();
+
+        return self::SUCCESS;
     }
 
     /**
@@ -70,27 +65,19 @@ class InstallCommand extends Command
      */
     private function install(): void
     {
-        var_dump($this->get(ShellUtils::class));
-        die;
         // original script
-        $this->rsyncFileSafely('.node-version');
-        $this->rsyncFileSafely('Makefile');
-
-        $this->setupGithubWorkflows();
-        $this->setupGitHook();
-
-        $this->setupComposerPackages();
-
-        $this->rsyncFileSafely('build/', 'build');
-
-        $this->wpSpecificReplacements();
-        $this->sySpecificReplacements();
+//        $this->rsyncFileSafely('.node-version');
+//        $this->rsyncFileSafely('Makefile');
+//
+//        $this->setupGithubWorkflows();
+//        $this->setupGitHook();
+//
+//        $this->setupComposerPackages();
+//
+//        $this->rsyncFileSafely('build/', 'build');
+//
+//        $this->wpSpecificReplacements();
+//        $this->sySpecificReplacements();
     }
 
-    public static function getSubscribedServices(): array
-    {
-        return [
-            ShellUtils::class,
-        ];
-    }
 }
