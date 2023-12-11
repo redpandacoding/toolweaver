@@ -13,6 +13,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RedPandaCoding\ToolWeaver\Service\Shell\ShellUtils;
 use RedPandaCoding\ToolWeaver\ToolWeaverApplication;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
@@ -26,6 +27,13 @@ class Command extends SymfonyCommand// implements ServiceSubscriberInterface
 
         return false;
     }
+
+    public function getApplication(): ToolWeaverApplication|Application|null
+    {
+        return parent::getApplication();
+    }
+
+
 
 //    /**
 //     * @throws ContainerExceptionInterface

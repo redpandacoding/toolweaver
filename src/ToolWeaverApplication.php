@@ -138,11 +138,6 @@ class ToolWeaverApplication extends Application
         return $projectType;
     }
 
-//    public function get(string $id)
-//    {
-//        return $this->kernel->getContainer()->has($id);
-//    }
-
     public function isWordpressProject(): bool
     {
         $projectType = str_contains(getcwd(), '/wp-content');

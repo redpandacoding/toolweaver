@@ -24,6 +24,12 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 )]
 class InstallCommand extends Command
 {
+    public function __construct(
+        private readonly ShellUtils $shell,
+    ){
+        parent::__construct();
+    }
+
     public function configure()
     {
         $this
@@ -65,6 +71,11 @@ class InstallCommand extends Command
      */
     private function install(): void
     {
+        // NodeJS version file
+        $this->shell->rsyncFile('.node-version',$this->getApplication()->getTemplateDirectory());
+
+        //
+
         // original script
 //        $this->rsyncFileSafely('.node-version');
 //        $this->rsyncFileSafely('Makefile');
@@ -78,6 +89,11 @@ class InstallCommand extends Command
 //
 //        $this->wpSpecificReplacements();
 //        $this->sySpecificReplacements();
+    }
+
+    private function rsyncFile($file,)
+    {
+
     }
 
 }

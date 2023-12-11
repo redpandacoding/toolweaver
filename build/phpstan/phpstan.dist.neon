@@ -1,0 +1,15 @@
+parameters:
+    level: 4
+    paths:
+        - %currentWorkingDirectory%/src/
+        - %currentWorkingDirectory%/tests/
+    excludePaths:
+        - %currentWorkingDirectory%/**/*80.php
+        - %currentWorkingDirectory%/tests/_support/_generated/
+    bootstrapFiles:
+        - %currentWorkingDirectory%/tests/_support/_generated/AcceptanceTesterActions.php
+        - %currentWorkingDirectory%/tests/_support/_generated/FunctionalTesterActions.php
+        - %currentWorkingDirectory%/tests/_support/_generated/UnitTesterActions.php
+includes:
+    - %currentWorkingDirectory%/vendor/phpstan/phpstan-symfony/extension.neon
+    - %currentWorkingDirectory%/vendor/phpstan/phpstan-symfony/rules.neon

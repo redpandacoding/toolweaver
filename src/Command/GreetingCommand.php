@@ -26,13 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class GreetingCommand extends Command
 {
-
-    public function __construct(
-        private ShellUtils $shell,
-    ){
-        parent::__construct();
-    }
-
     public function configure(): void
     {
         $this

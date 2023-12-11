@@ -9,17 +9,20 @@
 namespace RedPandaCoding\ToolWeaver\Service\Shell;
 
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 class ShellUtils
 {
     private ?Filesystem $fs;
 
-    public function __construct(bool $preferRsync = false)
-    {
+    public function __construct(
+        private string $templateDir,
+        bool $preferRsync = false
+    ){
         $this->fs = $preferRsync ? null : new Filesystem();
     }
 
-    private function mkdir(string $path): void
+    public function mkdir(string $path): void
     {
         if (null === $this->fs) {
             $this->exec(sprintf('mkdir -p %s', $path));
@@ -29,7 +32,7 @@ class ShellUtils
         $this->fs->mkdir($path);
     }
 
-    private function rsyncFile(string $file, ?string $destination = null,bool $noClobber = true): void
+    public function rsyncFile(string $file, ?string $destination = null,bool $clobber = false): void
     {
         if (null === $this->fs) {
             if ($destination === 'build' and $this->isSy) {
@@ -41,16 +44,28 @@ class ShellUtils
             }
 
             $this->exec(sprintf('rsync -a %s %s/%s %s',
-                $noClobber ? '--ignore-existing' : '',
+                !$clobber ? '--ignore-existing' : '',
                 $this->templateDir,
                 $file,
                 $destination
             ));
         }
 
+        var_dump(Path::join(
+            $destination,
+            $file
+        ));die;
+
+        $this->fs->copy(Path::join(
+            $this->templateDir,
+            $file
+        ),Path::join(
+            $destination,
+            $file
+        ),$clobber);
     }
 
-    private function rm(string $path): void
+    public function rm(string $path): void
     {
         if (null === $this->fs) {
             $this->exec('rm -rf '.$path);
@@ -60,13 +75,13 @@ class ShellUtils
         $this->fs->remove($path);
     }
 
-    private function exec(string $command): void
+    public function exec(string $command): void
     {
         var_dump('AHHH this still needs setup');die;
 //        exec($command);
     }
 
-    private function sedSearchReplaceInFile(string $file, string $original, string $replacement): void
+    public function sedSearchReplaceInFile(string $file, string $original, string $replacement): void
     {
         if (null === $this->fs) {
             $this->exec("sed -i '' 's/$original/$replacement/g' $file");
@@ -74,7 +89,7 @@ class ShellUtils
 
     }
 
-    private function searchReplaceTextInDirectory(string $directory, string $original, string $replacement): void
+    public function searchReplaceTextInDirectory(string $directory, string $original, string $replacement): void
     {
         if (null === $this->fs) {
             $this->exec("grep -rl $original $directory | xargs sed -i '' 's/$original/$replacement/g'");

@@ -115,22 +115,24 @@ class Kernel implements KernelInterface
 
         $container->register('kernel')->setSynthetic(true);
 
-        //Commands
-        $container->register(GreetingCommand::class,GreetingCommand::class)
-            ->setAutowired(true)
-            ->setArguments([new Reference(ShellUtils::class)])
-            ->addTag('console.command')
+        // Define and register services
+        //TODO: add arguments that are required
+        $container->autowire(ShellUtils::class,ShellUtils::class)
+//            ->setArgument('$templateDir',$this->)
+//            ->setArguments([])
         ;
 
-        $container->register(InstallCommand::class,InstallCommand::class)
+        //Commands
+        $container->register(GreetingCommand::class,GreetingCommand::class)
             ->setAutowired(true)
 //            ->setArguments([new Reference(ShellUtils::class)])
             ->addTag('console.command')
         ;
 
-        // Define and register services
-        $container->register(ShellUtils::class,ShellUtils::class)
+        $container->register(InstallCommand::class,InstallCommand::class)
             ->setAutowired(true)
+            ->setArguments([new Reference(ShellUtils::class)])
+            ->addTag('console.command')
         ;
 
         // Application
